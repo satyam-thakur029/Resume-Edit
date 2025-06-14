@@ -476,7 +476,8 @@ const Preview = () => {
               resumeData={resumeData}
               setResumeData={setResumeData}
             />
-          )}
+          )
+          }
         </DragDropContext>
       </A4PageWrapper>
     </div>

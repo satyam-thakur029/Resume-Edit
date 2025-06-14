@@ -9,18 +9,24 @@ const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
 
 export default function Hero() {
     return (
-        <div className="h-screen relative w-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
+        <div className="h-screen relative w-full bg-black flex flex-col items-center justify-center overflow-hidden">
+            {/* Subtle background elements */}
+            <div className="absolute inset-0 opacity-20">
+                <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
+            </div>
+
             {/* GitHub Star Button */}
             <a
-                href="https://github.com/HOTHEAD01TH/free-resume-maker"
+                href="https://github.com/satyam-thakur029/Resume-Edit"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="absolute top-4 right-4 z-50 inline-flex items-center gap-2 rounded-lg border border-slate-800 bg-black px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-slate-800"
+                className="absolute top-6 right-6 z-50 flex items-center gap-2 rounded-lg bg-white/5 backdrop-blur-sm px-4 py-2 text-sm text-white/90 transition-all hover:bg-white/10 hover:text-white"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
+                    width="18"
+                    height="18"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                 >
@@ -29,62 +35,63 @@ export default function Hero() {
                 Star on GitHub
             </a>
 
+            {/* Subtle sparkles */}
             <div className="w-full absolute inset-0 h-screen">
                 <SparklesCore
-                    id="tsparticlesfullpage"
                     background="transparent"
                     minSize={0.6}
-                    maxSize={1.4}
-                    particleDensity={100}
-                    className="w-full h-full"
+                    maxSize={1.2}
+                    particleDensity={50}
                     particleColor="#FFFFFF"
                 />
             </div>
             
-            <h1 className={`${spaceGrotesk.className} md:text-8xl text-4xl lg:text-7xl font-bold text-center text-white relative z-20 tracking-tighter`}>
-                Free Resume Maker
-            </h1>
+            {/* Main content */}
+            <div className="relative z-20 text-center px-4 max-w-3xl mx-auto">
+                <h1 className={`${spaceGrotesk.className} text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight`}>
+                    Craft Your Perfect <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500">Resume</span>
+                </h1>
 
-            <div className={`${spaceGrotesk.className} text-center text-slate-500 text-xl mt-4 relative z-20`}>
-                <Typewriter
-                    words={['ATS Friendly', 'Smart Suggestions', 'Professional & Perfect']}
-                    loop={0}
-                    cursor
-                    cursorStyle='|'
-                    typeSpeed={10}
-                    deleteSpeed={10}
-                    delaySpeed={800}
-                />
+                <p className={`${spaceGrotesk.className} text-lg text-gray-400 mb-8`}>
+                    <Typewriter
+                        words={['ATS-optimized templates', 'Professional designs', 'Easy customization', 'Free forever']}
+                        loop={0}
+                        cursor
+                        cursorStyle='|'
+                        typeSpeed={70}
+                        deleteSpeed={50}
+                        delaySpeed={1500}
+                    />
+                </p>
+
+                <Link
+                    href="/builder"
+                    className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-3 font-medium text-white transition-all hover:from-purple-700 hover:to-blue-700 hover:shadow-lg hover:shadow-purple-500/20"
+                >
+                    Start Building Now
+                    <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        className="ml-2"
+                    >
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </Link>
             </div>
 
-            {/* Beam and additional sparkles container */}
-            <div className="w-[40rem] h-40 relative">
-                {/* Beam gradients */}
-                <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-[2px] w-3/4 blur-sm" />
-                <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-px w-3/4" />
-                <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-[5px] w-1/4 blur-sm" />
-                <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-px w-1/4" />
-
-                {/* Additional sparkles under text */}
-                <SparklesCore
-                    background="transparent"
-                    minSize={0.4}
-                    maxSize={1}
-                    particleDensity={1200}
-                    className="w-full h-full"
-                    particleColor="#FFFFFF"
-                />
-
-                {/* Radial gradient mask */}
-                <div className="absolute inset-0 w-full h-full bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]"></div>
+            {/* Floating features */}
+            <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-4 z-20">
+                {['No Signup', '100% Free', 'Privacy Focused'].map((text, i) => (
+                    <span key={i} className="text-xs text-gray-400 bg-white/5 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                        {text}
+                    </span>
+                ))}
             </div>
-
-            <Link
-                href="/builder"
-                className="relative z-20 -mt-20 inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
-            >
-                Create Resume
-            </Link>
         </div>
     );
 }

@@ -1,62 +1,103 @@
-import { FaCloudUploadAlt, FaCloudDownloadAlt } from "react-icons/fa";
-import React, { useContext } from "react";
+import { FaCloudUploadAlt, FaCloudDownloadAlt, FaExclamationTriangle } from "react-icons/fa";
+import React, { useContext, useState } from "react";
 import { ResumeContext } from "../../pages/builder";
 
 const LoadUnload = () => {
   const { resumeData, setResumeData } = useContext(ResumeContext);
+  const [message, setMessage] = useState({ text: "", type: "" });
 
-  // load backup resume data
-  const handleLoad = (event) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const resumeData = JSON.parse(event.target.result);
-      setResumeData(resumeData);
-    };
-    reader.readAsText(file);
+  const clearMessage = () => {
+    setTimeout(() => setMessage({ text: "", type: "" }), 3000);
   };
 
-  // download resume data
-  const handleDownload = (data, filename, event) => {
+  const handleLoad = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.json')) {
+      setMessage({ text: "Please select a JSON file", type: "error" });
+      clearMessage();
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const loadedData = JSON.parse(e.target.result);
+        setResumeData(loadedData);
+        setMessage({ text: "Resume loaded successfully", type: "success" });
+      } catch {
+        setMessage({ text: "Invalid JSON file", type: "error" });
+      }
+      clearMessage();
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  };
+
+  const handleDownload = (event) => {
     event.preventDefault();
-    const jsonData = JSON.stringify(data);
-    const blob = new Blob([jsonData], { type: "application/json" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
+    if (!resumeData) return;
+
+    try {
+      const filename = `resume_${new Date().toISOString().split('T')[0]}.json`;
+      const blob = new Blob([JSON.stringify(resumeData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(url);
+      setMessage({ text: "Resume downloaded", type: "success" });
+    } catch {
+      setMessage({ text: "Download failed", type: "error" });
+    }
+    clearMessage();
   };
 
   return (
-    <div className="flex flex-wrap gap-4 mb-2 justify-center">
-      <div className="inline-flex flex-row items-center gap-2">
-        <h2 className="text-[1.2rem] text-white">Load Data</h2>
-        <label className="p-2 text-white bg-zinc-800 rounded cursor-pointer hover:bg-zinc-700 transition-colors">
-          <FaCloudUploadAlt className="text-[1.2rem] text-white" />
-          <input
-            aria-label="Load Data"
-            type="file"
-            className="hidden"
-            onChange={handleLoad}
-            accept=".json"
-          />
-        </label>
-      </div>
-      <div className="inline-flex flex-row items-center gap-2">
-        <h2 className="text-[1.2rem] text-white">Save Data</h2>
-        <button
-          aria-label="Save Data"
-          className="p-2 text-white bg-zinc-800 rounded hover:bg-zinc-700 transition-colors"
-          onClick={(event) =>
-            handleDownload(
-              resumeData,
-              resumeData.name + " by ATSResume.json",
-              event
-            )
-          }
-        >
-          <FaCloudDownloadAlt className="text-[1.2rem] text-white" />
-        </button>
+    <div className="p-4 bg-white border rounded shadow-sm">
+      {message.text && (
+        <div className={`mb-4 p-2 rounded ${
+          message.type === "error" 
+            ? "bg-red-100 text-red-700" 
+            : "bg-green-100 text-green-700"
+        }`}>
+          {message.type === "error" && <FaExclamationTriangle className="inline mr-2" />}
+          {message.text}
+        </div>
+      )}
+
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <label className="flex flex-col items-center p-4 border-2 border-dashed rounded cursor-pointer hover:bg-gray-50">
+            <FaCloudUploadAlt className="mb-2 text-gray-500" />
+            <span className="font-medium">Upload Resume</span>
+            <span className="text-sm text-gray-500">JSON format</span>
+            <input 
+              type="file" 
+              className="hidden" 
+              accept=".json" 
+              onChange={handleLoad} 
+            />
+          </label>
+        </div>
+
+        <div className="flex-1">
+          <button
+            onClick={handleDownload}
+            disabled={!resumeData}
+            className={`flex flex-col items-center w-full p-4 border-2 border-dashed rounded ${
+              !resumeData 
+                ? "cursor-not-allowed opacity-50" 
+                : "cursor-pointer hover:bg-gray-50"
+            }`}
+          >
+            <FaCloudDownloadAlt className="mb-2 text-blue-500" />
+            <span className="font-medium">Download Resume</span>
+            <span className="text-sm text-gray-500">Save as JSON</span>
+          </button>
+        </div>
       </div>
     </div>
   );

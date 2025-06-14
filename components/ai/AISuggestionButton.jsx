@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { FaLightbulb, FaSpinner } from 'react-icons/fa';
-import { getSuggestions } from '../../utils/gemini';
+import { FaLightbulb, FaSpinner, FaTimes } from 'react-icons/fa';
 
 const AISuggestionButton = ({ section, content }) => {
   const [suggestions, setSuggestions] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleGetSuggestions = async () => {
+    if (!content.trim()) {
+      setSuggestions("Please add some content first to get suggestions");
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch('/api/suggestions', {
@@ -20,39 +24,58 @@ const AISuggestionButton = ({ section, content }) => {
         }),
       });
       const data = await response.json();
-      setSuggestions(data.suggestions);
+      setSuggestions(data.suggestions || "No suggestions available");
     } catch (error) {
       console.error('Suggestions error:', error);
+      setSuggestions("Failed to get suggestions. Please try again.");
     }
     setLoading(false);
   };
 
   return (
-    <div className="flex-col-gap-2 mb-4">
+    <div className="mb-4">
       <div className="flex justify-end">
         <button
           onClick={handleGetSuggestions}
-          className="bg-zinc-800 text-white p-2 rounded hover:bg-zinc-700 transition-colors"
+          className={`flex items-center gap-2 px-3 py-2 rounded-md transition-all
+            ${loading 
+              ? 'bg-gray-300 text-gray-700' 
+              : 'bg-gray-900 text-white'}
+          `}
           disabled={loading}
         >
-          {loading ? <FaSpinner className="animate-spin" /> : <FaLightbulb />}
+          {loading ? (
+            <FaSpinner className="animate-spin" />
+          ) : (
+            <FaLightbulb className="animate-pulse" style={{ 
+              filter: 'drop-shadow(0 0 4px rgba(255, 255, 0, 0.7))',
+              animationDuration: '2s' 
+            }} />
+          )}
+         
         </button>
       </div>
       
       {suggestions && (
-        <div className="bg-zinc-100 p-4 rounded mt-2 -ml-20 shadow-md">
-          <h3 className="text-zinc-800 font-semibold mb-2 text-left">AI Suggestions:</h3>
-          <div className="text-zinc-700 whitespace-pre-line">{suggestions}</div>
-          <button
-            onClick={() => setSuggestions('')}
-            className="mt-2 bg-zinc-800 text-white px-3 py-1 rounded hover:bg-zinc-700"
-          >
-            Dismiss
-          </button>
+        <div className="mt-3 bg-white border border-gray-200 rounded-md shadow-sm">
+          <div className="p-3">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="text-gray-800 font-medium">AI Suggestions</h3>
+              <button
+                onClick={() => setSuggestions('')}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            <div className="text-gray-700 text-sm whitespace-pre-line">
+              {suggestions}
+            </div>
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default AISuggestionButton; 
+export default AISuggestionButton;
